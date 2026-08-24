@@ -13,7 +13,7 @@ Chrome→CUPS→filtro personalizado→ventana de Zenity→parámetros + ID→fi
 
 
 ## Instalación
-> [!WARNING]
+> [!CAUTION]
 > Si bien no se apreciaron problemas en la ejecución del software, no me hago responsable del uso indebido o daño que un usuario pueda ocasionar en su ordenador o dispositivo de impresión. El uso de este software está estrictamente recomendado a técnicos calificados para el mantenimiento de dispositivos multifunción.
 1. Instalar los drivers `cque-es-4.0-15.x86_64.deb`. También se pueden [descargar](https://www.canon.es/support/) desde la páginsa de soporte oficial de canon (Driver CQue DEB)
 2. Descargar el programa en la sección de [descargas](google.com)
@@ -37,4 +37,6 @@ Una serie de opciones útiles para el usuario que pueden ayudar a solucionar pro
 Indica las rutas de los archivos utilizados por el programa, así como la declaración de licencia GNU.
 
 > [!WARNING]
-> Este programa fue probado con dispositivos Canon de la gama imageRUNNER ADVANCE, imageRUNNER ADVANCE DX e imageFORCE bajo condiciones controladas y supervisadas por personal calificado. No se puede asegurar el correcto funcionamiento en dispositivos en los que no ha sido testeado, por tanto, si se desea utilizar en un dispositivo de gama diferente a las mencionadas, se recomienda encarecidamente probar bajo condiciones controladas en un entorno que no pueda afectar el flujo del trabajo del cliente. De la misma forma, es posible la utilización de este programa en dispositivos de marcars diferentes a Canon, no obstante, desconozco los resulados que esto pueda generar en los dispositivos así como las adapciones que deban realizarse para hacer el programa compatible con otras marcas de dispositivos.
+> Este programa fue probado con dispositivos Canon de la gama imageRUNNER ADVANCE, imageRUNNER ADVANCE DX e imageFORCE bajo condiciones controladas y supervisadas por personal calificado. No se puede asegurar el correcto funcionamiento en dispositivos en los que no ha sido testeado, por tanto, si se desea utilizar en un dispositivo de gama diferente a las mencionadas, se recomienda encarecidamente probar bajo condiciones controladas en un entorno que no pueda afectar el flujo del trabajo del cliente.
+>
+> De la misma forma, es posible la utilización de este programa en dispositivos de marcas diferentes a Canon, no obstante, desconozco los resulados que esto pueda generar en los dispositivos así como las adapciones que deban realizarse para hacer el programa compatible con otras marcas de dispositivos.
