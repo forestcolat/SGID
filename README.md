@@ -10,8 +10,12 @@ Lo que hace este programa es instalar un filtro personalizado en el sistema oper
 
 Chrome→CUPS→filtro personalizado→ventana de Zenity→parámetros + ID→filtro original→Máquina
 
+
+
 ## Instalación
-1. Descargar los [drivers](https://www.canon.es/support/) correspondientes para linux (Driver CQue DEB)
+> [!WARNING]
+> Si bien no se apreciaron problemas en la ejecución del software, no me hago responsable del uso indebido o daño que un usuario pueda ocasionar en su ordenador o dispositivo de impresión. El uso de este software está estrictamente recomendado a técnicos calificados para el mantenimiento de dispositivos multifunción.
+1. Instalar los drivers `cque-es-4.0-15.x86_64.deb`. También se pueden [descargar](https://www.canon.es/support/) desde la páginsa de soporte oficial de canon (Driver CQue DEB)
 2. Descargar el programa en la sección de [descargas](google.com)
 3. Extraer el programa.
 4. Click derecho en `config_IDs_Linux.sh` → propiedades → permisos → marcar casilla `Es ejecutable` → Aceptar
@@ -31,3 +35,6 @@ Permite al usuario habilitar o deshabilitar el uso de IDs de departamento. La co
 Una serie de opciones útiles para el usuario que pueden ayudar a solucionar problemas, como descargar drivers, reiniciar el servicio de impresión o deshacer todos los cambios hechos por el programa.
 ### Información adicional
 Indica las rutas de los archivos utilizados por el programa, así como la declaración de licencia GNU.
+
+> [!WARNING]
+> Este programa fue probado con dispositivos Canon de la gama imageRUNNER ADVANCE, imageRUNNER ADVANCE DX e imageFORCE bajo condiciones controladas y supervisadas por personal calificado. No se puede asegurar el correcto funcionamiento en dispositivos en los que no ha sido testeado, por tanto, si se desea utilizar en un dispositivo de gama diferente a las mencionadas, se recomienda encarecidamente probar bajo condiciones controladas en un entorno que no pueda afectar el flujo del trabajo del cliente. De la misma forma, es posible la utilización de este programa en dispositivos de marcars diferentes a Canon, no obstante, desconozco los resulados que esto pueda generar en los dispositivos así como las adapciones que deban realizarse para hacer el programa compatible con otras marcas de dispositivos.
