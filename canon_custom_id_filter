@@ -1,0 +1,58 @@
+#!/bin/bash
+#--------------------------------------------------------
+#Copyright (c) 2026 Oreste Colatruglio
+#Este programa es software libre bajo licencia GNU GPLv3.
+#--------------------------------------------------------
+
+# Argumentos estándar de CUPS:
+# $1: Job ID, $2: User, $3: Title, $4: Copies, $5: Options, $6: File
+
+ARCHIVO_LOG="/tmp/CCIDERR.log"
+REAL_USER="$2"
+
+
+# Buscamos un proceso gráfico que el usuario real tenga abierto sí o sí
+PROCESO_GRAFICO=$(pgrep -u "$REAL_USER" -x "mate-panel" || pgrep -u "$REAL_USER" -x "plasmashell" || pgrep -u "$REAL_USER" -x "gnome-shell" || pgrep -u "$REAL_USER" -x "xfce4-panel" | head -n 1)
+
+if [ -n "$PROCESO_GRAFICO" ]; then
+    # Leemos la memoria del proceso (/proc/PID/environ) para extraer su DISPLAY y XAUTHORITY reales
+    DISPLAY_DETECTADO=$(grep -z "^DISPLAY=" "/proc/$PROCESO_GRAFICO/environ" | cut -d= -f2-)
+    XAUTHORITY_DETECTADO=$(grep -z "^XAUTHORITY=" "/proc/$PROCESO_GRAFICO/environ" | cut -d= -f2-)
+fi
+
+# Asignamos los valores detectados (con paracaídas por si acaso)
+export DISPLAY="${DISPLAY_DETECTADO:-:0}"
+export XAUTHORITY="${XAUTHORITY_DETECTADO:-/home/$REAL_USER/.Xauthority}"
+# =================================================================
+
+# Log de depuración para el técnico
+echo "==========================================" >> "$ARCHIVO_LOG"
+echo "Fecha/Hora:       $(date '+%Y-%m-%d %H:%M:%S')" >> "$ARCHIVO_LOG"
+echo "ID de Trabajo:    $1" >> "$ARCHIVO_LOG"
+echo "Usuario Real:     $REAL_USER" >> "$ARCHIVO_LOG"
+echo "DISPLAY Usado:    $DISPLAY" >> "$ARCHIVO_LOG"
+echo "XAUTHORITY Usado: $XAUTHORITY" >> "$ARCHIVO_LOG"
+echo "==========================================" >> "$ARCHIVO_LOG"
+
+# 4. Lanzar el pop-up mediante Zenity
+ID_DEP=$(sudo -u "$REAL_USER" DISPLAY="$DISPLAY" XAUTHORITY="$XAUTHORITY" /usr/bin/zenity \
+    --entry \
+    --title="ID Canon" \
+    --text="Introduce ID:" 2>/dev/null)
+
+# 5. Validación: Si el usuario cancela o deja el ID vacío, abortamos
+if [ -z "$ID_DEP" ]; then
+    echo "ERROR: No se proporcionó ID de departamento" >> "$ARCHIVO_LOG"
+    exit 1
+fi
+
+echo "ID Departamento: $ID_DEP" >> "$ARCHIVO_LOG"
+
+# 6. Inyección del ID y ejecución del driver real (foomatic-rip)
+NEW_OPTIONS="$5 UserID=$ID_DEP"
+
+if [ -n "$6" ]; then
+    /usr/lib/cups/filter/foomatic-rip "$1" "$2" "$3" "$4" "$NEW_OPTIONS" "$6"
+else
+    /usr/lib/cups/filter/foomatic-rip "$1" "$2" "$3" "$4" "$NEW_OPTIONS"
+fi

@@ -1,0 +1,93 @@
+#!/bin/bash
+#--------------------------------------------------------
+#Copyright (c) 2026 Oreste Colatruglio
+#Este programa es software libre bajo licencia GNU GPLv3.
+#--------------------------------------------------------
+
+# Argumentos estándar de CUPS
+# $1: Job ID | $2: User | $3: Title | $4: Copies | $5: Options | $6: File
+
+# --- CONFIGURACIÓN COORDINADA ---
+ARCHIVO_LOG="/tmp/CCIDERR.log"
+REAL_USER=$2
+DATA_FILE="/var/tmp/.canonid/.Canon_DATAFILE.cbl"
+
+# Leemos la llave real generada por el instalador
+PASS=$(cat /usr/bin/kidc.blc)
+
+# =================================================================
+# 1. DETECCIÓN DEL ENTORNO GRÁFICO (X11 SEGURO)
+# -----------------------------------------------------------------
+SESION_ACTIVA=$(loginctl list-sessions --no-legend | awk '{print $1}' | while read -r id; do
+    if loginctl show-session "$id" | grep -q "Active=yes"; then
+        echo "$id"
+        break
+    fi
+done)
+
+if [ -n "$SESION_ACTIVA" ]; then
+    DISPLAY=$(loginctl show-session "$SESION_ACTIVA" -p Display --value)
+fi
+export DISPLAY
+XAUTH_FILE="/home/$REAL_USER/.Xauthority"
+
+# Log de depuración para el técnico
+echo "==========================================" >> "$ARCHIVO_LOG"
+echo "Fecha/Hora:       $(date '+%Y-%m-%d %H:%M:%S')" >> "$ARCHIVO_LOG"
+echo "ID de Trabajo:    $1" >> "$ARCHIVO_LOG"
+echo "Usuario Real:     $REAL_USER" >> "$ARCHIVO_LOG"
+echo "DISPLAY Usado:    $DISPLAY" >> "$ARCHIVO_LOG"
+echo "XAUTHORITY Usado: $XAUTHORITY" >> "$ARCHIVO_LOG"
+echo "==========================================" >> "$ARCHIVO_LOG"
+
+# Aseguramos que el archivo existe para evitar errores de Openssl
+if [ ! -f "$DATA_FILE" ]; then
+    mkdir -p "/var/tmp/.canonid" 2>/dev/null
+    echo "" | openssl enc -aes-256-cbc -a -pbkdf2 -pass pass:"$PASS" -out "$DATA_FILE" 2>/dev/null
+    chmod 666 "$DATA_FILE" 2>/dev/null
+    chown lp:lp "$DATA_FILE" 2>/dev/null
+fi
+
+# =================================================================
+# 2. LECTURA Y LOGICA DE BÚSQUEDA EN MEMORIA
+# -----------------------------------------------------------------
+
+# 1. Desencriptamos todo el archivo a una variable en la RAM
+ID_DECRYPT=$(openssl enc -aes-256-cbc -d -pbkdf2 -a -pass pass:"$PASS" -in "$DATA_FILE" 2>/dev/null)
+
+# 2. CORRECCIÓN: Buscamos el usuario usando un pipe hacia grep
+ID_GUARDADO=$(echo "$ID_DECRYPT" | grep -E "^${REAL_USER}=" | cut -d'=' -f2)
+
+# =================================================================
+# 3. LÓGICA DE DECISIÓN (¿PREGUNTAR O USAR GUARDADO?)
+# -----------------------------------------------------------------
+if [ -n "$ID_GUARDADO" ]; then
+    ID_DEP="$ID_GUARDADO"
+    echo "Estado:           Usuario encontrado. Usando ID guardado ($ID_DEP)." >> "$ARCHIVO_LOG"
+else
+    echo "Estado:           Usuario nuevo. Solicitando ID por pantalla..." >> "$ARCHIVO_LOG"
+
+    ID_DEP=$(sudo -u "$REAL_USER" DISPLAY="$DISPLAY" XAUTHORITY="$XAUTH_FILE" /usr/bin/zenity --entry --title="ID Canon" --text="Introduce tu ID de Departamento (se guardará para futuras impresiones):")
+
+    # Validación: Si cancela o deja vacío, abortamos
+    if [ $? -ne 0 ] || [ -z "$ID_DEP" ]; then
+        echo "ERROR:            Impresión cancelada o ID vacío." >> "$ARCHIVO_LOG"
+        exit 1
+    fi
+
+    # CORRECCIÓN: Concatenamos el texto antiguo con el nuevo registro y ciframos todo otra vez
+    echo -e "${ID_DECRYPT}\n${REAL_USER}=${ID_DEP}" | openssl enc -aes-256-cbc -a -pbkdf2 -pass pass:"$PASS" -out "$DATA_FILE"
+
+    echo "Estado:           Nuevo ID guardado correctamente en la base de datos." >> "$ARCHIVO_LOG"
+fi
+
+echo "==========================================" >> "$ARCHIVO_LOG"
+
+# 4. Inyección del ID y ejecución del driver real (foomatic-rip)
+NEW_OPTIONS="$5 UserID=$ID_DEP"
+
+if [ -n "$6" ]; then
+    /usr/lib/cups/filter/foomatic-rip "$1" "$2" "$3" "$4" "$NEW_OPTIONS" "$6"
+else
+    /usr/lib/cups/filter/foomatic-rip "$1" "$2" "$3" "$4" "$NEW_OPTIONS"
+fi
