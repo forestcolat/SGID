@@ -16,7 +16,7 @@ Chrome→CUPS→filtro personalizado→ventana de Zenity→parámetros + ID→fi
 > [!CAUTION]
 > Si bien no se apreciaron problemas en la ejecución del software, no me hago responsable del uso indebido o daño que un usuario pueda ocasionar en su ordenador o dispositivo de impresión. El uso de este software está estrictamente recomendado a técnicos calificados para el mantenimiento de dispositivos multifunción.
 1. Instalar los drivers `cque-es-4.0-15.x86_64.deb`. También se pueden [descargar](https://www.canon.es/support/) desde la páginsa de soporte oficial de canon (Driver CQue DEB)
-2. Descargar el programa en la sección de [descargas](google.com)
+2. Descargar el programa en la sección de [descargas](https://github.com/forestcolat/SGID/releases/tag/test-release)
 3. Extraer el programa.
 4. Click derecho en `config_IDs_Linux.sh` → propiedades → permisos → marcar casilla `Es ejecutable` → Aceptar
 5. Doble click para ejectuar, o alternativamente, abrir una ventana de terminal y arrastar hacia ella.
