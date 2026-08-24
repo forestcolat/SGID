@@ -11,7 +11,7 @@ Lo que hace este programa es instalar un filtro personalizado en el sistema oper
 Chrome→CUPS→filtro personalizado→ventana de Zenity→parámetros + ID→filtro original→Máquina
 
 ## Instalación
-1.Descargar los [drivers](https://www.canon.es/support/) correspondientes para linux (Driver CQue DEB)
+1. Descargar los [drivers](https://www.canon.es/support/) correspondientes para linux (Driver CQue DEB)
 2. Descargar el programa en la sección de [descargas](google.com)
 3. Extraer el programa.
 4. Click derecho en `config_IDs_Linux.sh` → propiedades → permisos → marcar casilla `Es ejecutable` → Aceptar
